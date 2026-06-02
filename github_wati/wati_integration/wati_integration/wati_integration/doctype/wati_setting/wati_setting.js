@@ -1,8 +1,0 @@
-// Copyright (c) 2022, Yasir Shaikh and contributors
-// For license information, please see license.txt
-
-frappe.ui.form.on('Wati Setting', {
-	// refresh: function(frm) {
-
-	// }
-});
