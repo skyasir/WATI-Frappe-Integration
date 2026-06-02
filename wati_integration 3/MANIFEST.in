@@ -1,8 +1,0 @@
-include wati_integration/templates/*.html
-include wati_integration/templates/*.js
-recursive-include wati_integration *.json
-recursive-include wati_integration *.js
-recursive-include wati_integration *.css
-recursive-include wati_integration *.html
-recursive-include wati_integration *.png
-recursive-include wati_integration *.svg
