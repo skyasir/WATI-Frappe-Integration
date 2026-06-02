@@ -5,6 +5,11 @@ app_description = "Frappe app to send WhatsApp messages via WATI"
 app_email = "drmohammeddanishshaikh@gmail.com"
 app_license = "MIT"
 
+# Includes in <head>
+# ------------------
+# include js in desk (loads the global "Send to WhatsApp" form button)
+app_include_js = "/assets/wati_integration/js/wati.js"
+
 # Apps
 # ------------------
 # required_apps = []
