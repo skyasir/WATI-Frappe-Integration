@@ -155,8 +155,8 @@ def send_whatsapp_message(template, mobile, data, document, doctype):
 	if not mobile:
 		return
 
-	base_url = wati_setting.url.rstrip("/") + "/api/v1/sendTemplateMessage/" + str(mobile)
-	params = {"whatsappNumber": wati_setting.whatsapp_number}
+	base_url = wati_setting.url.rstrip("/") + "/api/v1/sendTemplateMessage"
+	params = {"whatsappNumber": str(mobile)}
 
 	payload = json.dumps(
 		{
