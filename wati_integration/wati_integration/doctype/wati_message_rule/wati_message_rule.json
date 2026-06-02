@@ -23,7 +23,10 @@
   "section_break_12",
   "message_template",
   "column_break_14",
-  "template_variable"
+  "template_variable",
+  "additional_message_section",
+  "additional_message_template",
+  "additional_mobile_no"
  ],
  "fields": [
   {
@@ -116,6 +119,24 @@
    "fieldname": "html_13",
    "fieldtype": "HTML",
    "options": "<p><strong>Condition Examples:</strong></p>\n<pre>doc.status==\"Open\"<br>doc.due_date==nowdate()<br>doc.total &gt; 40000\n</pre>\n"
+  },
+  {
+   "fieldname": "additional_message_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Message",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "additional_message_template",
+   "fieldtype": "Link",
+   "label": "Message Template",
+   "options": "Message Template"
+  },
+  {
+   "fieldname": "additional_mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "description": "Recipient number with country code, digits only (e.g. 919876543210)."
   }
  ],
  "index_web_pages_for_search": 1,

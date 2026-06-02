@@ -13,6 +13,25 @@ from frappe.utils.safe_exec import get_safe_globals
 REQUEST_TIMEOUT = 30
 
 
+def get_wati_setting():
+	"""Return the Wati Setting single doc, validating that creds are present."""
+	wati_setting = frappe.get_single("Wati Setting")
+	if not wati_setting.url or not wati_setting.token:
+		frappe.throw(_("URL and Token are mandatory in Wati Setting."))
+	return wati_setting
+
+
+def get_wati_headers(wati_setting):
+	"""Build the auth headers, tolerating a token pasted with a 'Bearer ' prefix."""
+	token = (wati_setting.token or "").strip()
+	if token.lower().startswith("bearer "):
+		token = token[7:].strip()
+	return {
+		"Authorization": "Bearer " + token,
+		"Content-Type": "application/json",
+	}
+
+
 class WatiMessageRule(Document):
 	def validate(self):
 		self.validate_mobile_no_field()
@@ -29,6 +48,22 @@ class WatiMessageRule(Document):
 	def validate_mobile_no_field(self):
 		if not self.mobile_no_field:
 			frappe.throw(_("Select Mobile No Field Name."))
+
+	@frappe.whitelist()
+	def send_to_whatsapp(self):
+		"""Ad-hoc send: fire the 'Additional Message' template to the entered number."""
+		if not self.additional_message_template:
+			frappe.throw(_("Select a Message Template in the Additional Message section."))
+		if not self.additional_mobile_no:
+			frappe.throw(_("Enter a Mobile Number in the Additional Message section."))
+
+		send_whatsapp_message(
+			self.additional_message_template,
+			self.additional_mobile_no,
+			json.dumps([]),
+			self.name,
+			"Wati Message Rule",
+		)
 
 	@frappe.whitelist()
 	def set_variable(self):
@@ -146,11 +181,7 @@ def send_message_using_template(self, rule):
 
 
 def send_whatsapp_message(template, mobile, data, document, doctype):
-	wati_setting = frappe.get_single("Wati Setting")
-	if not wati_setting.url or not wati_setting.whatsapp_number or not wati_setting.token:
-		frappe.throw(
-			_("URL, WhatsApp Number and Token are mandatory in Wati Setting to send a WhatsApp message")
-		)
+	wati_setting = get_wati_setting()
 
 	if not mobile:
 		return
@@ -165,10 +196,7 @@ def send_whatsapp_message(template, mobile, data, document, doctype):
 			"parameters": json.loads(data) if isinstance(data, str) else data,
 		}
 	)
-	headers = {
-		"Authorization": "Bearer " + wati_setting.token,
-		"Content-Type": "application/json",
-	}
+	headers = get_wati_headers(wati_setting)
 
 	response = requests.post(
 		base_url, params=params, data=payload, headers=headers, timeout=REQUEST_TIMEOUT

@@ -15,6 +15,22 @@ frappe.ui.form.on("Wati Message Rule", {
 	refresh: function (frm) {
 		frm.trigger("setup_fieldname_select");
 
+		if (!frm.is_new()) {
+			frm.add_custom_button(__("Send to WhatsApp"), function () {
+				if (!frm.doc.additional_message_template || !frm.doc.additional_mobile_no) {
+					frappe.msgprint(
+						__("Set a Message Template and Mobile No in the Additional Message section first.")
+					);
+					return;
+				}
+				frm.call("send_to_whatsapp").then((r) => {
+					if (!r.exc) {
+						frappe.show_alert({ message: __("Sent"), indicator: "green" });
+					}
+				});
+			});
+		}
+
 		if (!frm.is_new() && !frappe.user.has_role("System Manager")) {
 			const meta = frappe.get_meta("Wati Message Rule");
 			(meta.fields || []).forEach(function (df) {

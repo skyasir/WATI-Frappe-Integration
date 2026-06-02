@@ -1,11 +1,12 @@
 // Copyright (c) 2024, Yasir Shaikh and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Wati Setting", {
-	refresh: function (frm) {
-		frm.add_custom_button(__("Fetch Templates"), function () {
+frappe.listview_settings["Message Template"] = {
+	onload: function (listview) {
+		listview.page.add_inner_button(__("Fetch from WATI"), function () {
 			frappe.dom.freeze(__("Fetching approved templates from WATI..."));
-			frm.call("fetch_templates")
+			frappe
+				.call("wati_integration.wati_integration.doctype.wati_setting.wati_setting.fetch_templates")
 				.then((r) => {
 					frappe.dom.unfreeze();
 					if (r.exc) {
@@ -15,13 +16,15 @@ frappe.ui.form.on("Wati Setting", {
 					frappe.msgprint({
 						title: __("Templates Synced"),
 						indicator: "green",
-						message: __(
-							"Approved templates imported.<br>Created: {0}<br>Updated: {1}<br>Skipped (not approved): {2}",
-							[m.created || 0, m.updated || 0, m.skipped || 0]
-						),
+						message: __("Created: {0}, Updated: {1}, Skipped: {2}", [
+							m.created || 0,
+							m.updated || 0,
+							m.skipped || 0,
+						]),
 					});
+					listview.refresh();
 				})
 				.catch(() => frappe.dom.unfreeze());
 		});
 	},
-});
+};
